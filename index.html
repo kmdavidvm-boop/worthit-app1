@@ -4,32 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WorthIt</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-    
     <style>
-        /* CSS Integrado */
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f2f2f7; margin: 0; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
-        #app { width: 100%; max-width: 400px; background: white; height: 100vh; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; background: white; display: none; overflow-y: auto; }
+        #app { width: 100%; max-width: 400px; background: white; height: 100vh; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .screen { flex-grow: 1; padding: 20px; overflow-y: auto; display: none; }
         .active { display: block; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .total-display { background: linear-gradient(135deg, #007AFF, #5AC8FA); color: white; padding: 10px 20px; border-radius: 25px; font-weight: bold; }
-        .card { background: #f9f9f9; padding: 15px; border-radius: 20px; border: 1px solid #eee; margin-bottom: 15px; }
-        .fab { position: absolute; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #007AFF; color: white; font-size: 30px; border: none; z-index: 100; }
-        .nav { position: absolute; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 15px; background: white; border-top: 1px solid #eee; }
+        .total-badge { background: #007AFF; color: white; padding: 15px; border-radius: 20px; text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .card { background: #f9f9f9; padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #eee; display: flex; justify-content: space-between; }
+        .fab { position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #007AFF; color: white; font-size: 30px; border: none; z-index: 100; box-shadow: 0 5px 15px rgba(0,122,255,0.4); }
+        .nav { height: 60px; display: flex; justify-content: space-around; align-items: center; background: white; border-top: 1px solid #eee; }
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 80%; }
-        input { width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; }
+        input { width: 100%; margin-bottom: 15px; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #007AFF; color: white; border: none; border-radius: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="app">
     <div id="home" class="screen active">
-        <header><strong>🍎 WorthIt</strong> <div class="total-display" id="total">€1,235</div></header>
-        <div class="card">Current Value<br><b id="val">€450</b></div>
+        <header><h2>🍎 WorthIt</h2></header>
+        <div class="total-badge" id="total-display">€1,235</div>
         <h3>Recently Valued</h3>
         <div id="history"></div>
     </div>
@@ -40,8 +36,8 @@
     </div>
 
     <div class="nav">
-        <button onclick="show('home')">Home</button>
-        <button onclick="show('progress')">Progress</button>
+        <button onclick="show('home')" style="background:none; color:#007AFF;">🏠 Home</button>
+        <button onclick="show('progress')" style="background:none; color:#007AFF;">📈 Progress</button>
     </div>
 
     <button class="fab" onclick="document.getElementById('modal').style.display='flex'">+</button>
@@ -49,30 +45,42 @@
 
 <div id="modal" class="modal">
     <div class="modal-content">
-        <h3>Nueva Tasación</h3>
+        <h3>Añadir Objeto</h3>
         <input type="text" id="name" placeholder="Nombre...">
-        <input type="number" id="price" placeholder="Precio...">
-        <button onclick="add()">Guardar</button>
+        <input type="number" id="price" placeholder="Precio (€)...">
+        <button onclick="add()">Guardar Objeto</button>
+        <button onclick="document.getElementById('modal').style.display='none'" style="background:#ccc; margin-top:10px;">Cancelar</button>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     let total = 1235;
+    let history = [];
+
     function show(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
+
     function add() {
-        let p = parseInt(document.getElementById('price').value);
-        let n = document.getElementById('name').value;
-        total += p;
-        document.getElementById('total').innerText = '€' + total;
-        let div = document.createElement('div');
-        div.className = 'card';
-        div.innerText = n + ' - €' + p;
-        document.getElementById('history').appendChild(div);
-        document.getElementById('modal').style.display = 'none';
+        let name = document.getElementById('name').value;
+        let pVal = document.getElementById('price').value;
+        let price = parseFloat(pVal);
+
+        if (name && !isNaN(price)) {
+            total += price;
+            document.getElementById('total-display').innerText = '€' + total.toLocaleString();
+            
+            let div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `<span>${name}</span> <b>€${price}</b>`;
+            document.getElementById('history').appendChild(div);
+            
+            document.getElementById('modal').style.display = 'none';
+        } else {
+            alert("Por favor, introduce un nombre y un precio válido.");
+        }
     }
 </script>
 </body>
