@@ -7,14 +7,73 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-    <style> 
-        /* PEGA AQUÍ TODO TU CSS QUE HICIMOS ANTES */
+    
+    <style>
+        /* CSS Integrado */
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f2f2f7; margin: 0; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
+        #app { width: 100%; max-width: 400px; background: white; height: 100vh; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 20px; box-sizing: border-box; background: white; display: none; overflow-y: auto; }
+        .active { display: block; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .total-display { background: linear-gradient(135deg, #007AFF, #5AC8FA); color: white; padding: 10px 20px; border-radius: 25px; font-weight: bold; }
+        .card { background: #f9f9f9; padding: 15px; border-radius: 20px; border: 1px solid #eee; margin-bottom: 15px; }
+        .fab { position: absolute; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #007AFF; color: white; font-size: 30px; border: none; z-index: 100; }
+        .nav { position: absolute; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 15px; background: white; border-top: 1px solid #eee; }
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 80%; }
+        input { width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        /* PEGA AQUÍ TU JAVASCRIPT */
-    </script>
+
+<div id="app">
+    <div id="home" class="screen active">
+        <header><strong>🍎 WorthIt</strong> <div class="total-display" id="total">€1,235</div></header>
+        <div class="card">Current Value<br><b id="val">€450</b></div>
+        <h3>Recently Valued</h3>
+        <div id="history"></div>
+    </div>
+
+    <div id="progress" class="screen">
+        <h2>📈 Tu Progreso</h2>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <div class="nav">
+        <button onclick="show('home')">Home</button>
+        <button onclick="show('progress')">Progress</button>
+    </div>
+
+    <button class="fab" onclick="document.getElementById('modal').style.display='flex'">+</button>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3>Nueva Tasación</h3>
+        <input type="text" id="name" placeholder="Nombre...">
+        <input type="number" id="price" placeholder="Precio...">
+        <button onclick="add()">Guardar</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let total = 1235;
+    function show(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+    function add() {
+        let p = parseInt(document.getElementById('price').value);
+        let n = document.getElementById('name').value;
+        total += p;
+        document.getElementById('total').innerText = '€' + total;
+        let div = document.createElement('div');
+        div.className = 'card';
+        div.innerText = n + ' - €' + p;
+        document.getElementById('history').appendChild(div);
+        document.getElementById('modal').style.display = 'none';
+    }
+</script>
 </body>
 </html>
