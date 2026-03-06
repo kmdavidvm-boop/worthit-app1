@@ -2,21 +2,78 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WorthIt</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f2f2f7; margin: 0; padding: 0; display: flex; justify-content: center; }
+        #app { width: 375px; background: white; height: 100vh; position: relative; overflow-y: auto; padding-bottom: 80px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .screen { padding: 20px; display: none; }
+        .active { display: block; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px; }
+        .total-display { background: #007AFF; color: white; padding: 8px 16px; border-radius: 20px; font-weight: bold; }
+        .card { background: #f9f9f9; padding: 20px; border-radius: 20px; margin: 10px 0; border: 1px solid #eee; }
+        .fab { position: fixed; bottom: 30px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #007AFF; color: white; font-size: 30px; border: none; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .nav { position: fixed; bottom: 0; width: 375px; height: 60px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 80%; }
+        input { width: 100%; margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <header>🍎 WorthIt <div id="total">€1,235</div></header>
-        <div id="history-container"></div>
-        <button class="fab" onclick="document.getElementById('modal').style.display='flex'">+</button>
+
+<div id="app">
+    <div id="home" class="screen active">
+        <header><strong>🍎 WorthIt</strong> <div class="total-display" id="total">€1,235</div></header>
+        <div class="card">Current Value<br><b id="val">€450</b></div>
+        <h3>Recently Valued</h3>
+        <div id="history"></div>
     </div>
-    <div id="modal" class="modal">
-        <div class="content">
-            <input type="file" id="file">
-            <button onclick="save()">Subir y Analizar</button>
-        </div>
+
+    <div id="progress" class="screen">
+        <h2>📈 Tu Progreso</h2>
+        <canvas id="myChart"></canvas>
     </div>
-    <script src="app.js"></script>
+
+    <div class="nav">
+        <button onclick="show('home')">🏠 Home</button>
+        <button onclick="show('progress')">📈 Progress</button>
+    </div>
+
+    <button class="fab" onclick="document.getElementById('modal').style.display='flex'">+</button>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3>Nueva Tasación</h3>
+        <input type="text" id="name" placeholder="Nombre...">
+        <input type="number" id="price" placeholder="Precio...">
+        <button onclick="add()" style="width:100%; padding:10px; background:#007AFF; color:white; border:none; border-radius:5px;">Guardar</button>
+    </div>
+</div>
+
+<script>
+    let total = 1235;
+    function show(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+    function add() {
+        let p = parseInt(document.getElementById('price').value);
+        let n = document.getElementById('name').value;
+        if(!isNaN(p)) {
+            total += p;
+            document.getElementById('total').innerText = '€' + total;
+            let div = document.createElement('div');
+            div.className = 'card';
+            div.innerText = n + ' - €' + p;
+            document.getElementById('history').appendChild(div);
+            document.getElementById('modal').style.display = 'none';
+        }
+    }
+    // Gráfico inicial
+    const ctx = document.getElementById('myChart').getContext('2d');
+    new Chart(ctx, { type: 'line', data: { labels: ['Ayer', 'Hoy'], datasets: [{ data: [1000, 1235], borderColor: '#007AFF' }] } });
+</script>
 </body>
 </html>
