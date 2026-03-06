@@ -2,83 +2,58 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WorthIt Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WorthIt</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --blue: #007AFF; --bg: #F2F2F7; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; }
-        #app { width: 100%; max-width: 400px; height: 100vh; background: white; position: relative; overflow-y: auto; padding-bottom: 80px; }
-        .header { padding: 20px; text-align: center; }
-        .total-box { background: var(--blue); color: white; margin: 10px 20px; padding: 20px; border-radius: 20px; font-size: 28px; font-weight: bold; }
-        .item-card { background: white; border: 1px solid #ddd; border-radius: 15px; padding: 15px; margin: 10px 20px; display: flex; flex-direction: column; }
-        .editable { border: none; background: #f9f9f9; padding: 5px; width: 100%; }
-        .fab { position: fixed; bottom: 30px; right: 30px; background: var(--blue); color: white; width: 60px; height: 60px; border-radius: 50%; font-size: 30px; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.3); z-index: 1000; }
-        .nav { position: fixed; bottom: 0; width: 100%; max-width: 400px; height: 60px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; }
-        .hidden { display: none; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f2f2f7; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        #app { width: 100%; max-width: 400px; height: 90vh; background: white; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        .screen { flex: 1; padding: 20px; overflow-y: auto; display: none; }
+        .active { display: block; }
+        .total-box { background: #007AFF; color: white; padding: 20px; border-radius: 20px; text-align: center; font-size: 28px; font-weight: bold; margin: 10px; }
+        .card { background: #f9f9f9; padding: 15px; border-radius: 15px; margin: 10px 20px; border: 1px solid #eee; }
+        .nav { height: 60px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; }
+        .fab { position: absolute; bottom: 80px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #007AFF; color: white; border: none; font-size: 30px; box-shadow: 0 5px 15px rgba(0,122,255,0.4); }
     </style>
 </head>
 <body>
-
 <div id="app">
-    <div id="screen-home">
-        <div class="header"><h1>🍎 WorthIt</h1></div>
-        <div class="total-box" id="total-val">€0</div>
+    <div id="home" class="screen active">
+        <h2>🍎 WorthIt</h2>
+        <div class="total-box" id="total">€1,235</div>
         <h3>Recently Valued</h3>
-        <div id="history-container"></div>
+        <div id="history"></div>
     </div>
-
-    <div id="screen-progress" class="hidden">
-        <div class="header"><h2>📊 Progreso</h2></div>
-        <div style="padding: 20px;"><canvas id="myChart"></canvas></div>
+    <div id="progress" class="screen">
+        <h2>📈 Tu Progreso</h2>
+        <canvas id="myChart"></canvas>
     </div>
-
     <div class="nav">
-        <button onclick="nav('home')">🏠 Home</button>
-        <button onclick="nav('progress')">📈 Progress</button>
+        <button onclick="show('home')">🏠 Home</button>
+        <button onclick="show('progress')">📈 Progress</button>
     </div>
-
-    <button class="fab" onclick="document.getElementById('file-input').click()">+</button>
-    <input type="file" id="file-input" class="hidden" onchange="processImage(event)">
+    <button class="fab" onclick="document.getElementById('input-file').click()">+</button>
+    <input type="file" id="input-file" style="display:none" onchange="add()">
 </div>
-
 <script>
-    let total = 0;
-    let items = [];
-
-    function nav(s) {
-        document.getElementById('screen-home').classList.toggle('hidden', s !== 'home');
-        document.getElementById('screen-progress').classList.toggle('hidden', s !== 'progress');
+    let total = 1235;
+    function show(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
     }
-
-    function processImage(e) {
-        // Simulamos la IA (aquí conectarías con Gemini en un futuro)
-        const name = "Objeto Detectado";
-        const price = Math.floor(Math.random() * 500) + 50;
-        
-        items.push({ name, price, desc: "Sin descripción" });
+    function add() {
+        // Simulamos IA
+        let price = Math.floor(Math.random() * 500) + 50;
         total += price;
-        render();
+        document.getElementById('total').innerText = '€' + total;
+        let div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `Objeto nuevo - <b>€${price}</b>`;
+        document.getElementById('history').appendChild(div);
     }
-
-    function render() {
-        document.getElementById('total-val').innerText = '€' + total;
-        const container = document.getElementById('history-container');
-        container.innerHTML = '';
-        items.forEach((item, index) => {
-            container.innerHTML += `
-                <div class="item-card">
-                    <input class="editable" value="${item.name}" onchange="items[${index}].name=this.value">
-                    <input class="editable" value="${item.desc}" onchange="items[${index}].desc=this.value">
-                    <b style="color:var(--blue)">€${item.price}</b>
-                </div>`;
-        });
-    }
-
-    // Gráfico
-    const ctx = document.getElementById('myChart').getContext('2d');
-    new Chart(ctx, { type: 'line', data: { labels: ['Ene', 'Feb'], datasets: [{ data: [0, total], borderColor: '#007AFF' }] } });
 </script>
-
 </body>
 </html>
