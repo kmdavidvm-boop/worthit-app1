@@ -5,53 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WorthIt</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f2f2f7; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        #app { width: 100%; max-width: 400px; height: 90vh; background: white; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
-        .screen { flex: 1; padding: 20px; overflow-y: auto; display: none; }
-        .active { display: block; }
-        .total-box { background: #007AFF; color: white; padding: 20px; border-radius: 20px; text-align: center; font-size: 28px; font-weight: bold; margin: 10px; }
-        .card { background: #f9f9f9; padding: 15px; border-radius: 15px; margin: 10px 20px; border: 1px solid #eee; }
-        .nav { height: 60px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; }
-        .fab { position: absolute; bottom: 80px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #007AFF; color: white; border: none; font-size: 30px; box-shadow: 0 5px 15px rgba(0,122,255,0.4); }
+        /* CSS Integrado para asegurar que siempre cargue */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f2f2f7; margin: 0; padding: 0; height: 100vh; overflow: hidden; }
+        #app { width: 100vw; height: 100vh; display: flex; flex-direction: column; background: #f2f2f7; }
+        
+        /* Header y Total */
+        header { padding: 20px; font-weight: bold; font-size: 20px; }
+        .total-card { background: #007AFF; color: white; margin: 0 20px; padding: 25px; border-radius: 25px; text-align: center; font-size: 32px; font-weight: 800; box-shadow: 0 10px 20px rgba(0,122,255,0.3); }
+        
+        /* Contenedor de Historial */
+        #history { flex-grow: 1; overflow-y: auto; padding: 20px; }
+        .item-card { background: white; padding: 15px; border-radius: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        /* Navegación */
+        .nav { height: 70px; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; align-items: center; }
+        
+        /* Botón FAB */
+        .fab { position: fixed; bottom: 100px; right: 30px; width: 65px; height: 65px; background: #1c1c1e; color: white; border-radius: 50%; font-size: 30px; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
+
 <div id="app">
-    <div id="home" class="screen active">
-        <h2>🍎 WorthIt</h2>
-        <div class="total-box" id="total">€1,235</div>
-        <h3>Recently Valued</h3>
-        <div id="history"></div>
+    <header>🍎 WorthIt</header>
+    <div class="total-card" id="total">€1,235</div>
+    
+    <div id="history">
+        <div class="item-card"><span>Ejemplo: Cámara Canon</span> <b>€450</b></div>
     </div>
-    <div id="progress" class="screen">
-        <h2>📈 Tu Progreso</h2>
-        <canvas id="myChart"></canvas>
-    </div>
-    <div class="nav">
-        <button onclick="show('home')">🏠 Home</button>
-        <button onclick="show('progress')">📈 Progress</button>
-    </div>
-    <button class="fab" onclick="document.getElementById('input-file').click()">+</button>
-    <input type="file" id="input-file" style="display:none" onchange="add()">
+
+    <nav class="nav">
+        <div>🏠 Home</div>
+        <div>📈 Progress</div>
+    </nav>
+    
+    <button class="fab" onclick="addMockItem()">+</button>
 </div>
+
 <script>
     let total = 1235;
-    function show(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-    function add() {
-        // Simulamos IA
-        let price = Math.floor(Math.random() * 500) + 50;
-        total += price;
+    function addMockItem() {
+        total += 100;
         document.getElementById('total').innerText = '€' + total;
         let div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `Objeto nuevo - <b>€${price}</b>`;
+        div.className = 'item-card';
+        div.innerHTML = `<span>Nuevo Objeto</span> <b>€100</b>`;
         document.getElementById('history').appendChild(div);
     }
 </script>
